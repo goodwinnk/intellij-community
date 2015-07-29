@@ -49,7 +49,7 @@ class MockPackageFacadeGenerator : ModuleLevelBuilder(BuilderCategory.SOURCE_PRO
                      chunk: ModuleChunk,
                      dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>,
                      outputConsumer: ModuleLevelBuilder.OutputConsumer): ModuleLevelBuilder.ExitCode {
-    val filesToCompile = MultiMap.createLinked<ModuleBuildTarget, File>()
+    val filesToCompile: MultiMap<ModuleBuildTarget, File> = MultiMap.createLinked<ModuleBuildTarget, File>()
     dirtyFilesHolder.processDirtyFiles { target, file, root ->
       if (isCompilable(file)) {
         filesToCompile.putValue(target, file)
@@ -96,25 +96,28 @@ class MockPackageFacadeGenerator : ModuleLevelBuilder(BuilderCategory.SOURCE_PRO
       }
 
       val packagesToGenerate = LinkedHashMap<String, MutableList<File>>()
-      filesToCompile[target].forEach {
-        val currentName = getPackageName(it)
+      filesToCompile[target].forEach { file: File ->
+        val currentName = getPackageName(file)
         if (currentName !in packagesToGenerate) packagesToGenerate[currentName] = ArrayList()
-        packagesToGenerate[currentName].add(it)
-        val oldName = packagesStorage.getState(it.getAbsolutePath())
+        packagesToGenerate[currentName]!!.add(file)
+        val oldName = packagesStorage.getState(file.getAbsolutePath())
         if (oldName != null && oldName != currentName && oldName !in packagesToGenerate) {
           packagesToGenerate[oldName] = ArrayList()
         }
       }
-      val packagesFromDeletedFiles = dirtyFilesHolder.getRemovedFiles(target).filter { isCompilable(File(it)) }.mapNotNull { packagesStorage.getState(it) }
+      val packagesFromDeletedFiles = dirtyFilesHolder.getRemovedFiles(target).filter {
+        isCompilable(File(it)) }.mapNotNull { packagesStorage.getState(it)
+      }
+
       packagesFromDeletedFiles.forEach {
-        if (it !in packagesToGenerate) {
+        if (it!! !in packagesToGenerate) {
           packagesToGenerate[it] = ArrayList()
         }
       }
 
       val getParentFile: (File) -> File = { it.getParentFile() }
       val dirsToCheck = filesToCompile[target].mapTo(THashSet(FileUtil.FILE_HASHING_STRATEGY), getParentFile)
-      packagesFromDeletedFiles.flatMap { mappings.getClassSources(mappings.getName(StringUtil.getQualifiedName(it, "PackageFacade"))) }
+      packagesFromDeletedFiles.flatMap { mappings.getClassSources(mappings.getName(StringUtil.getQualifiedName(it, "PackageFacade")))!! }
                               .map(getParentFile).filterNotNullTo(dirsToCheck)
 
       for ((packageName, dirtyFiles) in packagesToGenerate) {

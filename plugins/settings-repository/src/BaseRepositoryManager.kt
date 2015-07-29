@@ -159,7 +159,7 @@ fun File.removeWithParentsIfEmpty(root: File, isFile: Boolean = true) {
   }
 }
 // kotlin bug, cannot be val (.NoSuchMethodError: org.jetbrains.settingsRepository.SettingsRepositoryPackage.getMARKER_ACCEPT_MY()[B)
-TestOnly object AM {
+object AM {
   val MARKER_ACCEPT_MY: ByteArray = "__accept my__".toByteArray()
   val MARKER_ACCEPT_THEIRS: ByteArray = "__accept theirs__".toByteArray()
 }
@@ -210,7 +210,7 @@ class RepositoryVirtualFile(private val path: String) : LightVirtualFile(PathUti
     throw IllegalStateException("You must use setBinaryContent")
   }
 
-  override fun setContent(requestor: Any?, content: CharSequence?, fireEvent: Boolean) {
+  override fun setContent(requestor: Any?, content: CharSequence, fireEvent: Boolean) {
     throw IllegalStateException("You must use setBinaryContent")
   }
 }
