@@ -27,14 +27,20 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.codeStyle.*
 import com.intellij.psi.formatter.DocumentBasedFormattingModel
 import com.intellij.testFramework.ParsingTestCase
+import com.intellij.testFramework.TestDataFile
 import com.intellij.testFramework.UsefulTestCase
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.kotlin.idea.core.formatter.JetCodeStyleSettings
 import org.jetbrains.kotlin.idea.formatter.JetFormattingModelBuilder
 import org.jetbrains.kotlin.parsing.JetParserDefinition
 import org.jetbrains.kotlin.psi.JetFile
 import org.junit.Assert
+import java.io.File
+import java.io.IOException
 
 public abstract class AbstractJetFormatterTest : ParsingTestCase("", "kt", JetParserDefinition()) {
+  var testDir = ""
+
   override fun setUp() {
     super.setUp()
 
@@ -59,13 +65,24 @@ public abstract class AbstractJetFormatterTest : ParsingTestCase("", "kt", JetPa
     myProject.registerService(javaClass<ProjectCodeStyleSettingsManager>(), ProjectCodeStyleSettingsManager())
   }
 
-  override fun getTestDataPath() = "platform/kotlin-formatter/testData"
+  override fun tearDown() {
+    super.tearDown()
+    testDir = ""
+  }
+
+  override fun getTestDataPath() = testDir
 
   public fun doTestInverted(path: String) {
     // Do nothing
   }
 
+  protected override fun loadFile(NonNls TestDataFile name: String): String {
+    return ParsingTestCase.loadFileDefault(testDir, name)
+  }
+
   public override fun doTest(path: String) {
+    testDir = path.replace("idea/testData/formatter", "platform/kotlin-formatter/testData").substringBeforeLast("/")
+
     doTest(false)
     Assert.assertTrue(myFile is JetFile)
 
@@ -94,7 +111,7 @@ public abstract class AbstractJetFormatterTest : ParsingTestCase("", "kt", JetPa
     val actual = document.getText()
 
     val fileName = "${getTestName(false)}.after.kt"
-    val expectedFilePath = "$myFullDataPath/$fileName"
+    val expectedFilePath = "$testDir/$fileName"
 
     UsefulTestCase.assertSameLinesWithFile(expectedFilePath, actual)
   }
