@@ -78,11 +78,16 @@ public class FormattingDocumentModelImpl implements FormattingDocumentModel {
   @Nullable
   public static Document getDocumentToBeUsedFor(final PsiFile file) {
     final Project project = file.getProject();
-    final Document document = PsiDocumentManager.getInstance(project).getDocument(file);
+    PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
+
+    final Document document = documentManager.getDocument(file);
     if (document == null) return null;
-    if (PsiDocumentManager.getInstance(project).isUncommited(document)) return null;
-    PsiToDocumentSynchronizer synchronizer = ((PsiDocumentManagerImpl)PsiDocumentManager.getInstance(project)).getSynchronizer();
-    if (synchronizer.isDocumentAffectedByTransactions(document)) return null;
+    if (documentManager.isUncommited(document)) return null;
+
+    if (documentManager instanceof PsiDocumentManagerImpl) {
+      PsiToDocumentSynchronizer synchronizer = ((PsiDocumentManagerImpl)documentManager).getSynchronizer();
+      if (synchronizer.isDocumentAffectedByTransactions(document)) return null;
+    }
 
     return document;
   }

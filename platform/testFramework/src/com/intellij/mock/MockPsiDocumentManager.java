@@ -33,8 +33,11 @@ public class MockPsiDocumentManager extends PsiDocumentManager {
   @Override
   @Nullable
   public Document getDocument(@NotNull PsiFile file) {
-    return null;
+    return document;
   }
+
+  private Document document;
+
 
   @Override
   @Nullable
@@ -75,7 +78,8 @@ public class MockPsiDocumentManager extends PsiDocumentManager {
 
   @Override
   public boolean isUncommited(@NotNull Document document) {
-    throw new UnsupportedOperationException("Method isUncommited is not yet implemented in " + getClass().getName());
+    return false;
+    //throw new UnsupportedOperationException("Method isUncommited is not yet implemented in " + getClass().getName());
   }
 
   @Override
@@ -127,5 +131,9 @@ public class MockPsiDocumentManager extends PsiDocumentManager {
   @Override
   public void reparseFiles(@NotNull Collection<VirtualFile> files, boolean includeOpenFiles) {
     throw new UnsupportedOperationException();
+  }
+
+  public void setDocument(Document document) {
+    this.document = document;
   }
 }
