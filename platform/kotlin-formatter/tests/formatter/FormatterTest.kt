@@ -27,6 +27,7 @@ import com.intellij.psi.codeStyle.*
 import com.intellij.psi.formatter.DocumentBasedFormattingModel
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.PlatformLiteFixture
+import com.intellij.testFramework.UsefulTestCase
 import com.intellij.util.messages.MessageBus
 import com.intellij.util.messages.MessageBusFactory
 import org.jetbrains.kotlin.idea.core.formatter.JetCodeStyleSettings
@@ -91,7 +92,12 @@ public class FormatterTest : ParsingTestCase("", "kt", JetParserDefinition()) {
 
     formatter.format(model, settings, indentOptions, ranges, false)
 
-    println(document.getText())
+    val actual = document.getText()
+
+    val fileName = "${getTestName(false)}.after.kt"
+    val expectedFilePath = "$myFullDataPath/$fileName"
+
+    UsefulTestCase.assertSameLinesWithFile(expectedFilePath, actual)
   }
 
   private fun getSettingsWithKotlin(): CodeStyleSettings {
