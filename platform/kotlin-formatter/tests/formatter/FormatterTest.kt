@@ -15,33 +15,28 @@
  */
 package formatter
 
-import com.intellij.formatting.*
+import com.intellij.formatting.CoreFormatterUtil
+import com.intellij.formatting.FormatTextRanges
+import com.intellij.formatting.FormatterImpl
+import com.intellij.formatting.FormattingMode
 import com.intellij.lang.Language
 import com.intellij.mock.MockDocument
 import com.intellij.mock.MockPsiDocumentManager
-import com.intellij.openapi.fileTypes.FileTypeFactory
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiManager
 import com.intellij.psi.codeStyle.*
 import com.intellij.psi.formatter.DocumentBasedFormattingModel
 import com.intellij.testFramework.ParsingTestCase
-import com.intellij.testFramework.PlatformLiteFixture
 import com.intellij.testFramework.UsefulTestCase
-import com.intellij.util.messages.MessageBus
-import com.intellij.util.messages.MessageBusFactory
 import org.jetbrains.kotlin.idea.core.formatter.JetCodeStyleSettings
 import org.jetbrains.kotlin.idea.formatter.JetFormattingModelBuilder
 import org.jetbrains.kotlin.parsing.JetParserDefinition
 import org.jetbrains.kotlin.psi.JetFile
 import org.junit.Assert
 
-public class FormatterTest : ParsingTestCase("", "kt", JetParserDefinition()) {
+public abstract class AbstractJetFormatterTest : ParsingTestCase("", "kt", JetParserDefinition()) {
   override fun setUp() {
     super.setUp()
-
-//    val appContainer = PlatformLiteFixture.getApplication().getPicoContainer()
-    //    PlatformLiteFixture.registerComponentInstance(appContainer, javaClass<FormatterEx>(), FormatterImpl())
 
     registerExtensionPoint(FileTypeIndentOptionsProvider.EP_NAME, javaClass<FileTypeIndentOptionsProvider>())
 
@@ -66,7 +61,11 @@ public class FormatterTest : ParsingTestCase("", "kt", JetParserDefinition()) {
 
   override fun getTestDataPath() = "platform/kotlin-formatter/testData"
 
-  public fun testArrayAccess() {
+  public fun doTestInverted(path: String) {
+    // Do nothing
+  }
+
+  public override fun doTest(path: String) {
     doTest(false)
     Assert.assertTrue(myFile is JetFile)
 
