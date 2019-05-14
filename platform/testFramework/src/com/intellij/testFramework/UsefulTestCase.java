@@ -153,6 +153,8 @@ public abstract class UsefulTestCase extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
+    fail();
+
     if (shouldContainTempFiles()) {
       IdeaTestExecutionPolicy policy = IdeaTestExecutionPolicy.current();
       String testName = null;

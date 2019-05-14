@@ -6,12 +6,22 @@
     <!-- Add your application components here -->
   </application-components>
 
+  <project-components>
+    <component>
+      <implementation-class>com.intellij.json.BunchProjectComponent</implementation-class>
+    </component>
+  </project-components>
+
   <actions>
     <!-- Add your actions here -->
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="com.intellij.json.JsonFileTypeFactory"/>
+    <fileTypeFactory implementation="com.intellij.json.BunchFileTypeFactory"/>
+    <scratch.rootType implementation="com.intellij.json.BunchRootType" />
+    <lang.substitutor language="TEXT" implementationClass="com.intellij.json.BunchLanguageSubstitutor" order="first"/>
+
     <fileTypeFactory implementation="com.intellij.json.json5.Json5FileTypeFactory"/>
     <iconProvider implementation="com.jetbrains.jsonSchema.JsonSchemaIconProvider"/>
     <lang.parserDefinition language="JSON" implementationClass="com.intellij.json.JsonParserDefinition"/>
